@@ -289,6 +289,7 @@ def batchnorm_backward(dout, cache):
     return dx, dgamma, dbeta
 
 
+
 def batchnorm_backward_alt(dout, cache):
     """
     Alternative backward pass for batch normalization.
@@ -319,18 +320,16 @@ def batchnorm_backward_alt(dout, cache):
     
     #dgamma = np.mean(dout * x_hat, axis=0)
     dgamma = np.sum(dout * x_hat, axis=0)
-    
-#     dx = np.zeros((N, D))
-#     dx_hat = np.multiply(dout,gamma)
-#     for i in range(N):
-#         dx[i,:] = (dx_hat[np.newaxis,i,:]*(1 - (1.0 / N))*i_var[i]) - np.matmul(dx_hat[np.newaxis,i,:],i_var[i]*x_hat[np.newaxis,i,:].transpose()*x_hat[np.newaxis,i,:])*(1.0 / N) 
-    
+
+    ##Referred to https://costapt.github.io/2016/07/09/batch-norm-alt/ for the derivation of this expression
+    ##Really Helpful
+    dx = (gamma*i_var/N) * (N*dout - x_hat*dgamma - dbeta)
+
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
 #     print(np.shape((dx_hat[np.newaxis,i,:]*(1 - (1.0 / N))*i_var[i]))
     return dx, dgamma, dbeta
-
 
 def layernorm_forward(x, gamma, beta, ln_param):
     """
